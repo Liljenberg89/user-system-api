@@ -49,6 +49,39 @@ app.post("/createUser", async (req, res) => {
   }
 });
 
+app.put("/editUser/:id", async (req, res) => {
+  try {
+    const { username, email, password } = req.body;
+
+    if (!username && !email && !password) {
+      return res.status(400).json({ message: "No input!" });
+    }
+
+    const update = {};
+    if (username) update.username = username;
+    if (email) update.email = email;
+    if (password) {
+      const passwordHash = await bcrypt.hash(password, 10);
+      update.password = passwordHash;
+    }
+
+    const user = await User.findByIdAndUpdate(req.params.id, update, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!user)
+      return res
+        .status(404)
+        .json({ message: "No user with that id was found!" });
+
+    res.status(200).json({ user: user, message: "User updated!" });
+  } catch (error) {
+    console.error(error.message);
+    return res.status(500).json({ message: "Server error" });
+  }
+});
+
 const deleteUsers = async () => {
   const deleteUser = await User.deleteMany();
 };
