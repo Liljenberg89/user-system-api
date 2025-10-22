@@ -13,6 +13,27 @@ app.get("/users", async (req, res) => {
   res.json(users);
 });
 
+app.post("/login", async (req, res) => {
+  const { username, email, password } = req.body;
+
+  try {
+    const user = await User.findOne({ $or: [{ email }, { username }] });
+
+    if (!user)
+      return res.status(409).json({ message: "Wrong username or email!" });
+
+    const checkPassword = await bcrypt.compare(password, user.password);
+
+    if (!checkPassword)
+      return res.status(401).json({ message: "Wrong password!" });
+
+    res.status(200).json({ user: user, message: "Logged in!" });
+  } catch (error) {
+    console.error(error.message);
+    return res.status(500).json({ message: "Server error" });
+  }
+});
+
 app.post("/createUser", async (req, res) => {
   const { username, email, password } = req.body;
 
