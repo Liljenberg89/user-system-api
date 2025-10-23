@@ -7,7 +7,7 @@ dotenv.config();
 const PORT = process.env.PORT || 3000;
 
 mongoose
-  .connect("mongodb://127.0.0.1:27017/filip")
+  .connect(process.env.MONGO_URI)
   .then(() => {
     console.log("MongoDB connected");
     app.listen(PORT, "0.0.0.0", () =>
