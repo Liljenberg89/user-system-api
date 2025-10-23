@@ -103,7 +103,13 @@ app.put("/editUser/:id", async (req, res) => {
   }
 });
 
-const deleteUsers = async () => {
-  const deleteUser = await User.deleteMany();
-};
+app.delete("/deleteUser/:id", async (req, res) => {
+  try {
+    const user = await User.deleteOne({ _id: req.params.id });
+    res.status(200).json({ message: "user deleted successfully" });
+  } catch (error) {
+    console.error(error.message);
+    return res.status(500).json({ message: "Server error" });
+  }
+});
 export default app;
