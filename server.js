@@ -35,7 +35,7 @@ app.post("/login", async (req, res) => {
 });
 
 app.post("/createUser", async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, role } = req.body;
 
   if (!username || !email || !password) {
     res.status(400).json({ message: "Fields are missing!" });
@@ -59,6 +59,7 @@ app.post("/createUser", async (req, res) => {
     const user = await User.create({
       username: username,
       email: email,
+      role: role,
       password: passwordHash,
     });
     res
@@ -72,15 +73,16 @@ app.post("/createUser", async (req, res) => {
 
 app.put("/editUser/:id", async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { username, email, password, role } = req.body;
 
-    if (!username && !email && !password) {
+    if (!username && !email && !password && !role) {
       return res.status(400).json({ message: "No input!" });
     }
 
     const update = {};
     if (username) update.username = username;
     if (email) update.email = email;
+    if (role) update.role = role;
     if (password) {
       const passwordHash = await bcrypt.hash(password, 10);
       update.password = passwordHash;
